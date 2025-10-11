@@ -1,0 +1,8 @@
+# terraform.tfvars.example
+
+project_id         = "your-gcp-project-id"
+region             = "us-west1"
+pubsub_topic_name  = "example-topic"
+bigquery_dataset   = "example_dataset"
+bigquery_table     = "example_table"
+service_account    = "example-sa@your-gcp-project-id.iam.gserviceaccount.com"

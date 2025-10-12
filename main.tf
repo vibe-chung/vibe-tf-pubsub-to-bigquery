@@ -35,33 +35,17 @@ resource "google_bigquery_table" "table" {
   dataset_id = google_bigquery_dataset.dataset.dataset_id
   project    = var.project_id
 
-  schema = [
-    {
-      name = "message"
-      type = "STRING"
-    },
-    {
-      name = "attributes"
-      type = "STRING"
-    },
-    {
-      name = "event_time"
-      type = "TIMESTAMP"
-    }
-    ,
-    {
-      name = "_metadata_message_id"
-      type = "STRING"
-    },
-    {
-      name = "_metadata_publish_time"
-      type = "TIMESTAMP"
-    },
-    {
-      name = "_metadata_subscription_name"
-      type = "STRING"
-    }
-  ]
+  schema = <<EOF
+[
+  {"name": "message", "type": "STRING"},
+  {"name": "attributes", "type": "STRING"},
+  {"name": "event_time", "type": "TIMESTAMP"},
+  {"name": "duration", "type": "INTEGER"},
+  {"name": "_metadata_message_id", "type": "STRING"},
+  {"name": "_metadata_publish_time", "type": "TIMESTAMP"},
+  {"name": "_metadata_subscription_name", "type": "STRING"}
+]
+EOF
 }
 
 resource "google_pubsub_subscription" "subscription" {

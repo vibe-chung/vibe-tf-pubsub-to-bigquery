@@ -14,18 +14,22 @@ provider "google" {
 }
 
 resource "google_project_service" "pubsub" {
-  project = var.project_id
-  service = "pubsub.googleapis.com"
+  project            = var.project_id
+  service            = "pubsub.googleapis.com"
+  disable_on_destroy = false
 }
 
 resource "google_project_service" "bigquery" {
-  project = var.project_id
-  service = "bigquery.googleapis.com"
+  project            = var.project_id
+  service            = "bigquery.googleapis.com"
+  disable_on_destroy = false
 }
 
 resource "google_pubsub_topic" "topic" {
   name    = var.pubsub_topic
   project = var.project_id
+
+  depends_on = [google_project_service.pubsub]
 }
 
 resource "google_bigquery_dataset" "dataset" {
@@ -33,6 +37,8 @@ resource "google_bigquery_dataset" "dataset" {
   project                    = var.project_id
   location                   = var.region
   delete_contents_on_destroy = true
+
+  depends_on = [google_project_service.bigquery]
 }
 
 resource "google_bigquery_table" "table" {
@@ -43,16 +49,19 @@ resource "google_bigquery_table" "table" {
   schema = <<EOF
 [
   {"name": "message", "type": "STRING"},
-  {"name": "data", "type": "STRING"},
   {"name": "attributes", "type": "STRING"},
   {"name": "event_time", "type": "TIMESTAMP"},
   {"name": "duration", "type": "INTEGER"},
-  {"name": "publish_time", "type": "TIMESTAMP"},
   {"name": "message_id", "type": "STRING"},
-  {"name": "subscription_name", "type": "STRING"}
+  {"name": "publish_time", "type": "TIMESTAMP"},  
+  {"name": "subscription_name", "type": "STRING"},
+  {"name": "data", "type": "STRING"}
 ]
 EOF
 
+  deletion_protection = false
+
+  depends_on = [google_bigquery_dataset.dataset]
 }
 
 resource "google_bigquery_table_iam_member" "pubsub_default_writer" {

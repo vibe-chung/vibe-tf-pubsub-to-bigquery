@@ -4,8 +4,8 @@ variable "project_id" {
 }
 
 variable "project_number" {
-    description = "The GCP project number"
-    type        = string
+  description = "The GCP project number"
+  type        = string
 }
 
 variable "region" {

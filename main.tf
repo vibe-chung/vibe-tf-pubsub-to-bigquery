@@ -28,6 +28,26 @@ resource "google_project_service" "bigquery" {
 resource "google_pubsub_topic" "topic" {
   name    = var.pubsub_topic
   project = var.project_id
+  schema_settings {
+    schema = google_pubsub_schema.event_schema.id
+    encoding = "JSON"
+  }
+}
+
+resource "google_pubsub_schema" "event_schema" {
+  name     = "event-schema"
+  project  = var.project_id
+  type     = "AVRO"
+  definition = <<EOF
+{
+  "type": "record",
+  "name": "EventMessage",
+  "fields": [
+    {"name": "event_time", "type": "string"},
+    {"name": "duration", "type": "int"}
+  ]
+}
+EOF
 
   depends_on = [google_project_service.pubsub]
 }
@@ -82,7 +102,7 @@ resource "google_bigquery_table_iam_member" "pubsub_default_metadata_viewer" {
 
 resource "google_pubsub_subscription" "subscription" {
   name    = "${var.pubsub_topic}-subscription"
-  topic   = google_pubsub_topic.topic.name
+  topic   = google_pubsub_topic.topic.id
   project = var.project_id
 
   depends_on = [
@@ -94,7 +114,7 @@ resource "google_pubsub_subscription" "subscription" {
 
   bigquery_config {
     table               = "${var.project_id}:${google_bigquery_dataset.dataset.dataset_id}.${google_bigquery_table.table.table_id}"
-    use_topic_schema    = false
+    use_topic_schema    = true
     write_metadata      = true
     drop_unknown_fields = true
   }

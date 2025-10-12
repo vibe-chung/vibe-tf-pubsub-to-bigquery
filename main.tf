@@ -13,9 +13,14 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_service_account" "pubsub_to_bigquery" {
-  account_id   = "pubsub-to-bigquery"
-  display_name = "Service Account for Pub/Sub to BigQuery publishing"
+resource "google_project_service" "pubsub" {
+  project = var.project_id
+  service = "pubsub.googleapis.com"
+}
+
+resource "google_project_service" "bigquery" {
+  project = var.project_id
+  service = "bigquery.googleapis.com"
 }
 
 resource "google_pubsub_topic" "topic" {
@@ -38,14 +43,32 @@ resource "google_bigquery_table" "table" {
   schema = <<EOF
 [
   {"name": "message", "type": "STRING"},
+  {"name": "data", "type": "STRING"},
   {"name": "attributes", "type": "STRING"},
   {"name": "event_time", "type": "TIMESTAMP"},
   {"name": "duration", "type": "INTEGER"},
-  {"name": "_metadata_message_id", "type": "STRING"},
-  {"name": "_metadata_publish_time", "type": "TIMESTAMP"},
-  {"name": "_metadata_subscription_name", "type": "STRING"}
+  {"name": "publish_time", "type": "TIMESTAMP"},
+  {"name": "message_id", "type": "STRING"},
+  {"name": "subscription_name", "type": "STRING"}
 ]
 EOF
+
+}
+
+resource "google_bigquery_table_iam_member" "pubsub_default_writer" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.dataset.dataset_id
+  table_id   = google_bigquery_table.table.table_id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:service-${var.project_number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+}
+
+resource "google_bigquery_table_iam_member" "pubsub_default_metadata_viewer" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.dataset.dataset_id
+  table_id   = google_bigquery_table.table.table_id
+  role       = "roles/bigquery.metadataViewer"
+  member     = "serviceAccount:service-${var.project_number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_pubsub_subscription" "subscription" {
@@ -53,12 +76,20 @@ resource "google_pubsub_subscription" "subscription" {
   topic   = google_pubsub_topic.topic.name
   project = var.project_id
 
+  depends_on = [
+    google_project_service.pubsub,
+    google_project_service.bigquery,
+    google_bigquery_table_iam_member.pubsub_default_writer,
+    google_bigquery_table_iam_member.pubsub_default_metadata_viewer
+  ]
+
   bigquery_config {
-    table               = google_bigquery_table.table.id
-    use_topic_schema    = true
+    table               = "${var.project_id}:${google_bigquery_dataset.dataset.dataset_id}.${google_bigquery_table.table.table_id}"
+    use_topic_schema    = false
     write_metadata      = true
     drop_unknown_fields = true
   }
 
   ack_deadline_seconds = 60
 }
+

@@ -1,7 +1,8 @@
 # terraform.tfvars.example
 
-project_id         = "your-gcp-project-id"
-region             = "us-west1"
-pubsub_topic.      = "example-topic"
-bigquery_dataset   = "example_dataset"
-bigquery_table     = "example_table"
+project_id        = "your-gcp-project-id"
+project_number    = "your-gcp-project-number"
+region            = "us-west1"
+pubsub_topic      = "example-topic"
+bigquery_dataset  = "example_dataset"
+bigquery_table    = "example_table"

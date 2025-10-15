@@ -35,16 +35,55 @@ resource "google_pubsub_topic" "topic" {
 }
 
 resource "google_pubsub_schema" "event_schema" {
-  name     = "event-schema"
+  name     = "oyster-event-schema-v2"
   project  = var.project_id
   type     = "AVRO"
   definition = <<EOF
 {
   "type": "record",
-  "name": "EventMessage",
+  "name": "Journey",
+  "namespace": "com.example.transport",
   "fields": [
-    {"name": "event_time", "type": "string"},
-    {"name": "duration", "type": "int"}
+    {
+      "name": "date",
+      "type": "string",
+      "doc": "The date of the journey (required)."
+    },
+    {
+      "name": "start_time",
+      "type": "string",
+      "doc": "The start time of the journey (required)."
+    },
+    {
+      "name": "end_time",
+      "type": "string",
+      "doc": "The end time of the journey (required)."
+    },
+    {
+      "name": "journey_action",
+      "type": "string",
+      "doc": "A description of the action taken (required)."
+    },
+    {
+      "name": "charge",
+      "type": "string",
+      "doc": "The charge amount (required). Mapped to 'double'."
+    },
+    {
+      "name": "credit",
+      "type": "string",
+      "doc": "The credit amount (required). Mapped to 'double'."
+    },
+    {
+      "name": "balance",
+      "type": "string",
+      "doc": "The resulting balance (required). Mapped to 'double'."
+    },
+    {
+      "name": "note",
+      "type": "string",
+      "doc": "Any additional note for the journey (required)."
+    }
   ]
 }
 EOF
@@ -68,14 +107,78 @@ resource "google_bigquery_table" "table" {
 
   schema = <<EOF
 [
-  {"name": "message", "type": "STRING"},
-  {"name": "attributes", "type": "STRING"},
-  {"name": "event_time", "type": "TIMESTAMP"},
-  {"name": "duration", "type": "INTEGER"},
-  {"name": "message_id", "type": "STRING"},
-  {"name": "publish_time", "type": "TIMESTAMP"},  
-  {"name": "subscription_name", "type": "STRING"},
-  {"name": "data", "type": "STRING"}
+  {
+    "name": "date",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The date of the journey."
+  },
+  {
+    "name": "start_time",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The start time of the journey."
+  },
+  {
+    "name": "end_time",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The end time of the journey."
+  },
+  {
+    "name": "journey_action",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "A description of the action taken."
+  },
+  {
+    "name": "charge",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "The charge amount. NUMERIC is preferred over FLOAT64 for financial data."
+  },
+  {
+    "name": "credit",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "The credit amount. NUMERIC is preferred over FLOAT64 for financial data."
+  },
+  {
+    "name": "balance",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "description": "The resulting balance. NUMERIC is preferred over FLOAT64 for financial data."
+  },
+  {
+    "name": "note",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "Any additional note for the journey."
+  },
+  {
+    "name": "message_id",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The unique ID of the Pub/Sub message."
+  },
+  {
+    "name": "publish_time",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE",
+    "description": "The time the message was published to Pub/Sub."
+  },
+  {
+    "name": "attributes",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "A JSON string of any custom Pub/Sub message attributes."
+  },
+  {
+    "name": "subscription_name",
+    "type": "STRING",
+    "mode": "NULLABLE",
+    "description": "The name of the Pub/Sub subscription that delivered the message."
+  }
 ]
 EOF
 

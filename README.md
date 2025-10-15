@@ -20,11 +20,17 @@ This project provisions GCP infrastructure to stream messages from Pub/Sub to Bi
 
 ## Usage
 1. Edit `terraform.tfvars` with your project details.
-2. Run:
-	 ```sh
-	 terraform init
-	 terraform apply
-	 ```
+
+2. Create a backend configuration file (e.g., `my.tfbackend`) with your bucket:
+	```hcl
+	bucket = "your-terraform-state-bucket"
+	```
+
+3. Initialise Terraform with the backend config file:
+	```sh
+	terraform init -backend-config=my.tfbackend
+	terraform apply
+	```
 
 ## Publishing Example
 To publish a message to the topic (using gcloud):

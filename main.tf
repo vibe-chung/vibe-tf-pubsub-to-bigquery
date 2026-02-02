@@ -208,6 +208,10 @@ resource "google_pubsub_subscription" "subscription" {
   topic   = google_pubsub_topic.topic.id
   project = var.project_id
 
+  expiration_policy {
+    ttl = "7776000s" # 90 days
+  }
+
   depends_on = [
     google_project_service.pubsub,
     google_project_service.bigquery,

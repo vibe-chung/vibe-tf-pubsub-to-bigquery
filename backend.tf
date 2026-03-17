@@ -1,5 +1,5 @@
 terraform {
   backend "gcs" {
-    prefix  = "oyster.tfstate"
+    prefix  = "ratemy.tfstate"
   }
 }

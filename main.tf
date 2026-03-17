@@ -35,54 +35,34 @@ resource "google_pubsub_topic" "topic" {
 }
 
 resource "google_pubsub_schema" "event_schema" {
-  name     = "oyster-event-schema-v2"
+  name     = "rate-my-schema-v1"
   project  = var.project_id
   type     = "AVRO"
   definition = <<EOF
 {
   "type": "record",
-  "name": "Journey",
-  "namespace": "com.example.transport",
+  "name": "Rating",
+  "namespace": "org.github.vibechung.ratemy",
   "fields": [
     {
-      "name": "date",
+      "name": "timestamp",
       "type": "string",
-      "doc": "The date of the journey (required)."
+      "doc": "The timestamp of the rating (required)."
     },
     {
-      "name": "start_time",
-      "type": "string",
-      "doc": "The start time of the journey (required)."
-    },
-    {
-      "name": "end_time",
-      "type": "string",
-      "doc": "The end time of the journey (required)."
-    },
-    {
-      "name": "journey_action",
+      "name": "event",
       "type": "string",
       "doc": "A description of the action taken (required)."
     },
     {
-      "name": "charge",
-      "type": "string",
-      "doc": "The charge amount (required). Mapped to 'double'."
+      "name": "rating",
+      "type": "int",
+      "doc": "The rating value (required)."
     },
     {
-      "name": "credit",
+      "name": "comment",
       "type": "string",
-      "doc": "The credit amount (required). Mapped to 'double'."
-    },
-    {
-      "name": "balance",
-      "type": "string",
-      "doc": "The resulting balance (required). Mapped to 'double'."
-    },
-    {
-      "name": "note",
-      "type": "string",
-      "doc": "Any additional note for the journey (required)."
+      "doc": "Any additional comment for the rating"
     }
   ]
 }
@@ -108,52 +88,28 @@ resource "google_bigquery_table" "table" {
   schema = <<EOF
 [
   {
-    "name": "date",
-    "type": "STRING",
+    "name": "timestamp",
+    "type": "TIMESTAMP",
     "mode": "NULLABLE",
-    "description": "The date of the journey."
+    "description": "The timestamp of the rating."
   },
   {
-    "name": "start_time",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "The start time of the journey."
-  },
-  {
-    "name": "end_time",
-    "type": "STRING",
-    "mode": "NULLABLE",
-    "description": "The end time of the journey."
-  },
-  {
-    "name": "journey_action",
+    "name": "event",
     "type": "STRING",
     "mode": "NULLABLE",
     "description": "A description of the action taken."
   },
   {
-    "name": "charge",
-    "type": "NUMERIC",
+    "name": "rating",
+    "type": "INT64",
     "mode": "NULLABLE",
-    "description": "The charge amount. NUMERIC is preferred over FLOAT64 for financial data."
+    "description": "The rating value."
   },
   {
-    "name": "credit",
-    "type": "NUMERIC",
-    "mode": "NULLABLE",
-    "description": "The credit amount. NUMERIC is preferred over FLOAT64 for financial data."
-  },
-  {
-    "name": "balance",
-    "type": "NUMERIC",
-    "mode": "NULLABLE",
-    "description": "The resulting balance. NUMERIC is preferred over FLOAT64 for financial data."
-  },
-  {
-    "name": "note",
+    "name": "comment",
     "type": "STRING",
     "mode": "NULLABLE",
-    "description": "Any additional note for the journey."
+    "description": "Any additional comment for the rating."
   },
   {
     "name": "message_id",

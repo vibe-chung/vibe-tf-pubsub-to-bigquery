@@ -26,7 +26,7 @@ resource "google_project_service" "bigquery" {
 }
 
 resource "google_pubsub_topic" "topic" {
-  name    = var.pubsub_topic
+  name    = "${var.keys[0]}-topic"
   project = var.project_id
   schema_settings {
     schema = google_pubsub_schema.event_schema.id
@@ -35,13 +35,13 @@ resource "google_pubsub_topic" "topic" {
 }
 
 resource "google_pubsub_schema" "event_schema" {
-  name     = "rate-my-schema-v1"
+  name     = "${var.keys[0]}-v1"
   project  = var.project_id
   type     = "AVRO"
   definition = <<EOF
 {
   "type": "record",
-  "name": "Rating",
+  "name": "${var.keys[0]}",
   "namespace": "org.github.vibechung.ratemy",
   "fields": [
     {
@@ -81,7 +81,7 @@ resource "google_bigquery_dataset" "dataset" {
 }
 
 resource "google_bigquery_table" "table" {
-  table_id   = var.bigquery_table
+  table_id   = var.keys[0]
   dataset_id = google_bigquery_dataset.dataset.dataset_id
   project    = var.project_id
 
@@ -160,7 +160,7 @@ resource "google_bigquery_table_iam_member" "pubsub_default_metadata_viewer" {
 }
 
 resource "google_pubsub_subscription" "subscription" {
-  name    = "${var.pubsub_topic}-subscription"
+  name    = "${var.keys[0]}-subscription"
   topic   = google_pubsub_topic.topic.id
   project = var.project_id
 

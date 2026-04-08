@@ -24,7 +24,8 @@ variable "bigquery_dataset" {
   type        = string
 }
 
-variable "bigquery_table" {
-  description = "The name of the BigQuery table"
-  type        = string
+variable "keys" {
+  description = "A list of keys for the resources"
+  type        = list(string)
+  default     = []
 }

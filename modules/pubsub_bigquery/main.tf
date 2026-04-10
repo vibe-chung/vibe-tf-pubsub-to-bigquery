@@ -1,5 +1,5 @@
 resource "google_pubsub_schema" "event_schema" {
-  name     = "${var.key}-v1"
+  name     = var.schema_name
   project  = var.project_id
   type     = "AVRO"
   definition = var.avro_schema

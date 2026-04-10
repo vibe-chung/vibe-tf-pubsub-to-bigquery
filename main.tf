@@ -1,11 +1,10 @@
-# Example: define schemas for each key
 locals {
-  avro_schemas = {
-    for k in var.keys :
-    k => <<EOF
+  starling = {
+    name = "starling"
+    avro_schema = <<EOF
 {
   "type": "record",
-  "name": "${k}-v1",
+  "name": "starling",
   "namespace": "org.github.vibechung.banking",
   "fields": [
     { "name": "amount_gbp", "type": "string", "doc": "The transaction amount in GBP." },
@@ -17,14 +16,11 @@ locals {
     { "name": "reference", "type": "string", "doc": "The reference for the transaction." },
     { "name": "spending_category", "type": "string", "doc": "The spending category." },
     { "name": "type", "type": "string", "doc": "The type of transaction." },
-    { "name": "index", "type": "string", "doc": "The index of the record as a string." }
+    { "name": "index", "type": "int", "doc": "The index of the record." }
   ]
 }
 EOF
-  }
-  bq_schemas = {
-    for k in var.keys :
-    k => <<EOF
+  bq_schema = <<EOF
 [
   { "name": "amount_gbp", "type": "NUMERIC", "mode": "NULLABLE", "description": "The transaction amount in GBP." },
   { "name": "balance_gbp", "type": "NUMERIC", "mode": "NULLABLE", "description": "The account balance in GBP after the transaction." },
@@ -35,7 +31,7 @@ EOF
   { "name": "reference", "type": "STRING", "mode": "NULLABLE", "description": "The reference for the transaction." },
   { "name": "spending_category", "type": "STRING", "mode": "NULLABLE", "description": "The spending category." },
   { "name": "type", "type": "STRING", "mode": "NULLABLE", "description": "The type of transaction." },
-  { "name": "index", "type": "STRING", "mode": "NULLABLE", "description": "The index of the record as a string." },
+  { "name": "index", "type": "INTEGER", "mode": "NULLABLE", "description": "The index of the record." },
   { "name": "message_id", "type": "STRING", "mode": "NULLABLE", "description": "The unique ID of the Pub/Sub message." },
   { "name": "publish_time", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "The time the message was published to Pub/Sub." },
   { "name": "attributes", "type": "STRING", "mode": "NULLABLE", "description": "A JSON string of any custom Pub/Sub message attributes." },
@@ -80,15 +76,14 @@ resource "google_bigquery_dataset" "dataset" {
   depends_on = [google_project_service.bigquery]
 }
 
-# Module for each key
-module "pubsub_bigquery" {
-  source           = "./modules/pubsub_bigquery"
-  for_each         = toset(var.keys)
+module "pubsub_bigquery_starling" {
+  source           = "./modules/pubsub_bigquery"  
   project_id       = var.project_id
   project_number   = var.project_number
   bigquery_dataset = google_bigquery_dataset.dataset.dataset_id
-  key              = each.value
-  avro_schema      = local.avro_schemas[each.value]
-  bq_schema        = local.bq_schemas[each.value]
+  key              = local.starling.name
+  schema_name      = "${local.starling.name}-v4"
+  avro_schema      = local.starling.avro_schema
+  bq_schema        = local.starling.bq_schema
 }
 

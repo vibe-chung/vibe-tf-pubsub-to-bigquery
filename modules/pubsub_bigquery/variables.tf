@@ -26,3 +26,8 @@ variable "key" {
   description = "The key for this resource set"
   type        = string
 }
+
+variable "schema_name" {
+  description = "The name of the Pub/Sub schema"
+  type        = string
+}

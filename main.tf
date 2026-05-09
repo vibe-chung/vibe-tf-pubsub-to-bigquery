@@ -85,6 +85,130 @@ EOF
 ]
 EOF
   }
+  monzo = {
+    name = "monzo"
+    avro_schema = <<EOF
+{
+  "type": "record",
+  "name": "monzo",
+  "namespace": "org.github.vibechung.banking",
+  "fields": [
+    { "name": "address", "type": "string", "doc": "The address related to the transaction." },
+    { "name": "amount", "type": "string", "doc": "The transaction amount as a string." },
+    { "name": "category", "type": "string", "doc": "The transaction category." },
+    { "name": "category_split", "type": "string", "doc": "The category split if any." },
+    { "name": "currency", "type": "string", "doc": "The transaction currency." },
+    { "name": "date", "type": "string", "doc": "The date of the transaction (YYYY-MM-DD)." },
+    { "name": "description", "type": "string", "doc": "The transaction description." },
+    { "name": "emoji", "type": "string", "doc": "Emoji associated with the transaction." },
+    { "name": "filename", "type": "string", "doc": "The filename of the statement." },
+    { "name": "index", "type": "int", "doc": "The index of the record." },
+    { "name": "local_amount", "type": "string", "doc": "The local amount as a string." },
+    { "name": "local_currency", "type": "string", "doc": "The local currency." },
+    { "name": "money_in", "type": "string", "doc": "Money in as a string." },
+    { "name": "money_out", "type": "string", "doc": "Money out as a string." },
+    { "name": "name", "type": "string", "doc": "Name associated with the transaction." },
+    { "name": "notes_and_tags", "type": "string", "doc": "Notes and tags for the transaction." },
+    { "name": "receipt", "type": "string", "doc": "Receipt information." },
+    { "name": "stmt_type", "type": "string", "doc": "Statement type." },
+    { "name": "time", "type": "string", "doc": "The time of the transaction (HH:MM:SS)." },
+    { "name": "transaction_id", "type": "string", "doc": "The transaction ID." },
+    { "name": "type", "type": "string", "doc": "The type of transaction." }
+  ]
+}
+EOF
+  bq_schema = <<EOF
+[
+  { "name": "address", "type": "STRING", "mode": "NULLABLE", "description": "The address related to the transaction." },
+  { "name": "amount", "type": "NUMERIC", "mode": "NULLABLE", "description": "The transaction amount." },
+  { "name": "category", "type": "STRING", "mode": "NULLABLE", "description": "The transaction category." },
+  { "name": "category_split", "type": "STRING", "mode": "NULLABLE", "description": "The category split if any." },
+  { "name": "currency", "type": "STRING", "mode": "NULLABLE", "description": "The transaction currency." },
+  { "name": "date", "type": "STRING", "mode": "NULLABLE", "description": "The date of the transaction (YYYY-MM-DD)." },
+  { "name": "description", "type": "STRING", "mode": "NULLABLE", "description": "The transaction description." },
+  { "name": "emoji", "type": "STRING", "mode": "NULLABLE", "description": "Emoji associated with the transaction." },
+  { "name": "filename", "type": "STRING", "mode": "NULLABLE", "description": "The filename of the statement." },
+  { "name": "index", "type": "INTEGER", "mode": "NULLABLE", "description": "The index of the record." },
+  { "name": "local_amount", "type": "NUMERIC", "mode": "NULLABLE", "description": "The local amount." },
+  { "name": "local_currency", "type": "STRING", "mode": "NULLABLE", "description": "The local currency." },
+  { "name": "money_in", "type": "NUMERIC", "mode": "NULLABLE", "description": "Money in." },
+  { "name": "money_out", "type": "NUMERIC", "mode": "NULLABLE", "description": "Money out." },
+  { "name": "name", "type": "STRING", "mode": "NULLABLE", "description": "Name associated with the transaction." },
+  { "name": "notes_and_tags", "type": "STRING", "mode": "NULLABLE", "description": "Notes and tags for the transaction." },
+  { "name": "receipt", "type": "STRING", "mode": "NULLABLE", "description": "Receipt information." },
+  { "name": "stmt_type", "type": "STRING", "mode": "NULLABLE", "description": "Statement type." },
+  { "name": "time", "type": "STRING", "mode": "NULLABLE", "description": "The time of the transaction (HH:MM:SS)." },
+  { "name": "transaction_id", "type": "STRING", "mode": "NULLABLE", "description": "The transaction ID." },
+  { "name": "type", "type": "STRING", "mode": "NULLABLE", "description": "The type of transaction." },
+  { "name": "message_id", "type": "STRING", "mode": "NULLABLE", "description": "The unique ID of the Pub/Sub message." },
+  { "name": "publish_time", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "The time the message was published to Pub/Sub." },
+  { "name": "attributes", "type": "STRING", "mode": "NULLABLE", "description": "A JSON string of any custom Pub/Sub message attributes." },
+  { "name": "subscription_name", "type": "STRING", "mode": "NULLABLE", "description": "The name of the Pub/Sub subscription that delivered the message." }
+]
+EOF
+  }
+  monzo_flex = {
+    name = "monzo-flex"
+    avro_schema = <<EOF
+{
+  "type": "record",
+  "name": "monzo_flex",
+  "namespace": "org.github.vibechung.banking",
+  "fields": [
+    { "name": "address", "type": "string", "doc": "The address related to the transaction." },
+    { "name": "amount", "type": "string", "doc": "The transaction amount as a string." },
+    { "name": "category", "type": "string", "doc": "The transaction category." },
+    { "name": "category_split", "type": "string", "doc": "The category split if any." },
+    { "name": "currency", "type": "string", "doc": "The transaction currency." },
+    { "name": "date", "type": "string", "doc": "The date of the transaction (YYYY-MM-DD)." },
+    { "name": "description", "type": "string", "doc": "The transaction description." },
+    { "name": "emoji", "type": "string", "doc": "Emoji associated with the transaction." },
+    { "name": "filename", "type": "string", "doc": "The filename of the statement." },
+    { "name": "index", "type": "int", "doc": "The index of the record." },
+    { "name": "local_amount", "type": "string", "doc": "The local amount as a string." },
+    { "name": "local_currency", "type": "string", "doc": "The local currency." },
+    { "name": "money_in", "type": "string", "doc": "Money in as a string." },
+    { "name": "money_out", "type": "string", "doc": "Money out as a string." },
+    { "name": "name", "type": "string", "doc": "Name associated with the transaction." },
+    { "name": "notes_and_tags", "type": "string", "doc": "Notes and tags for the transaction." },
+    { "name": "receipt", "type": "string", "doc": "Receipt information." },
+    { "name": "stmt_type", "type": "string", "doc": "Statement type." },
+    { "name": "time", "type": "string", "doc": "The time of the transaction (HH:MM:SS)." },
+    { "name": "transaction_id", "type": "string", "doc": "The transaction ID." },
+    { "name": "type", "type": "string", "doc": "The type of transaction." }
+  ]
+}
+EOF
+  bq_schema = <<EOF
+[
+  { "name": "address", "type": "STRING", "mode": "NULLABLE", "description": "The address related to the transaction." },
+  { "name": "amount", "type": "NUMERIC", "mode": "NULLABLE", "description": "The transaction amount." },
+  { "name": "category", "type": "STRING", "mode": "NULLABLE", "description": "The transaction category." },
+  { "name": "category_split", "type": "STRING", "mode": "NULLABLE", "description": "The category split if any." },
+  { "name": "currency", "type": "STRING", "mode": "NULLABLE", "description": "The transaction currency." },
+  { "name": "date", "type": "STRING", "mode": "NULLABLE", "description": "The date of the transaction (YYYY-MM-DD)." },
+  { "name": "description", "type": "STRING", "mode": "NULLABLE", "description": "The transaction description." },
+  { "name": "emoji", "type": "STRING", "mode": "NULLABLE", "description": "Emoji associated with the transaction." },
+  { "name": "filename", "type": "STRING", "mode": "NULLABLE", "description": "The filename of the statement." },
+  { "name": "index", "type": "INTEGER", "mode": "NULLABLE", "description": "The index of the record." },
+  { "name": "local_amount", "type": "NUMERIC", "mode": "NULLABLE", "description": "The local amount." },
+  { "name": "local_currency", "type": "STRING", "mode": "NULLABLE", "description": "The local currency." },
+  { "name": "money_in", "type": "NUMERIC", "mode": "NULLABLE", "description": "Money in." },
+  { "name": "money_out", "type": "NUMERIC", "mode": "NULLABLE", "description": "Money out." },
+  { "name": "name", "type": "STRING", "mode": "NULLABLE", "description": "Name associated with the transaction." },
+  { "name": "notes_and_tags", "type": "STRING", "mode": "NULLABLE", "description": "Notes and tags for the transaction." },
+  { "name": "receipt", "type": "STRING", "mode": "NULLABLE", "description": "Receipt information." },
+  { "name": "stmt_type", "type": "STRING", "mode": "NULLABLE", "description": "Statement type." },
+  { "name": "time", "type": "STRING", "mode": "NULLABLE", "description": "The time of the transaction (HH:MM:SS)." },
+  { "name": "transaction_id", "type": "STRING", "mode": "NULLABLE", "description": "The transaction ID." },
+  { "name": "type", "type": "STRING", "mode": "NULLABLE", "description": "The type of transaction." },
+  { "name": "message_id", "type": "STRING", "mode": "NULLABLE", "description": "The unique ID of the Pub/Sub message." },
+  { "name": "publish_time", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "The time the message was published to Pub/Sub." },
+  { "name": "attributes", "type": "STRING", "mode": "NULLABLE", "description": "A JSON string of any custom Pub/Sub message attributes." },
+  { "name": "subscription_name", "type": "STRING", "mode": "NULLABLE", "description": "The name of the Pub/Sub subscription that delivered the message." }
+]
+EOF
+  }
 }
 terraform {
   required_providers {
@@ -142,4 +266,26 @@ module "pubsub_bigquery_amex" {
   schema_name      = "${local.amex.name}-v1"
   avro_schema      = local.amex.avro_schema
   bq_schema        = local.amex.bq_schema
+}
+
+module "pubsub_bigquery_monzo" {
+  source           = "./modules/pubsub_bigquery"  
+  project_id       = var.project_id
+  project_number   = var.project_number
+  bigquery_dataset = google_bigquery_dataset.dataset.dataset_id
+  key              = local.monzo.name
+  schema_name      = "${local.monzo.name}-v1"
+  avro_schema      = local.monzo.avro_schema
+  bq_schema        = local.monzo.bq_schema
+}
+
+module "pubsub_bigquery_monzo_flex" {
+  source           = "./modules/pubsub_bigquery"  
+  project_id       = var.project_id
+  project_number   = var.project_number
+  bigquery_dataset = google_bigquery_dataset.dataset.dataset_id
+  key              = local.monzo_flex.name
+  schema_name      = "${local.monzo_flex.name}-v1"
+  avro_schema      = local.monzo_flex.avro_schema
+  bq_schema        = local.monzo_flex.bq_schema
 }

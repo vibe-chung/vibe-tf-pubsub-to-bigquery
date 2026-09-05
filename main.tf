@@ -209,6 +209,40 @@ EOF
 ]
 EOF
   }
+  sumup = {
+    name        = "sumup"
+    avro_schema = <<EOF
+{
+  "type": "record",
+  "name": "sumup",
+  "namespace": "org.github.vibechung.banking",
+  "fields": [
+    { "name": "amount", "type": "string", "doc": "The transaction amount as a string." },
+    { "name": "date", "type": "string", "doc": "The date of the transaction (YYYY-MM-DD)." },
+    { "name": "description", "type": "string", "doc": "The transaction description." },
+    { "name": "filename", "type": "string", "doc": "The filename of the statement." },
+    { "name": "index", "type": "int", "doc": "The index of the record." },
+    { "name": "reference", "type": "string", "doc": "The reference for the transaction." },
+    { "name": "type", "type": "string", "doc": "The type of transaction." }
+  ]
+}
+EOF
+    bq_schema   = <<EOF
+[
+  { "name": "amount", "type": "NUMERIC", "mode": "NULLABLE", "description": "The transaction amount." },
+  { "name": "date", "type": "STRING", "mode": "NULLABLE", "description": "The date of the transaction (YYYY-MM-DD)." },
+  { "name": "description", "type": "STRING", "mode": "NULLABLE", "description": "The transaction description." },
+  { "name": "filename", "type": "STRING", "mode": "NULLABLE", "description": "The filename of the statement." },
+  { "name": "index", "type": "INTEGER", "mode": "NULLABLE", "description": "The index of the record." },
+  { "name": "reference", "type": "STRING", "mode": "NULLABLE", "description": "The reference for the transaction." },
+  { "name": "type", "type": "STRING", "mode": "NULLABLE", "description": "The type of transaction." },
+  { "name": "message_id", "type": "STRING", "mode": "NULLABLE", "description": "The unique ID of the Pub/Sub message." },
+  { "name": "publish_time", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "The time the message was published to Pub/Sub." },
+  { "name": "attributes", "type": "STRING", "mode": "NULLABLE", "description": "A JSON string of any custom Pub/Sub message attributes." },
+  { "name": "subscription_name", "type": "STRING", "mode": "NULLABLE", "description": "The name of the Pub/Sub subscription that delivered the message." }
+]
+EOF
+  }
   santander = {
     name        = "santander"
     avro_schema = <<EOF
@@ -333,4 +367,15 @@ module "pubsub_bigquery_santander" {
   schema_name      = "${local.santander.name}-v1"
   avro_schema      = local.santander.avro_schema
   bq_schema        = local.santander.bq_schema
+}
+
+module "pubsub_bigquery_sumup" {
+  source           = "./modules/pubsub_bigquery"
+  project_id       = var.project_id
+  project_number   = var.project_number
+  bigquery_dataset = google_bigquery_dataset.dataset.dataset_id
+  key              = local.sumup.name
+  schema_name      = "${local.sumup.name}-v1"
+  avro_schema      = local.sumup.avro_schema
+  bq_schema        = local.sumup.bq_schema
 }
